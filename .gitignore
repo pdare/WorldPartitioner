@@ -5,6 +5,8 @@
 .import/
 export.cfg
 export_presets.cfg
+godot-cpp-4.2/
+godot-4.2/
 
 # Imported translations (automatically generated from CSV files)
 *.translation
@@ -13,3 +15,7 @@ export_presets.cfg
 .mono/
 data_*/
 mono_crash.*.json
+
+# other specific
+*.obj
+*.dblite
