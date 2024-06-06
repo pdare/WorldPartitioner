@@ -1,0 +1,28 @@
+[gd_scene load_steps=4 format=3 uid="uid://ba0tyec3gm2nb"]
+
+[ext_resource type="Script" path="res://player.gd" id="1_myybe"]
+
+[sub_resource type="CapsuleMesh" id="CapsuleMesh_hq643"]
+
+[sub_resource type="PrismMesh" id="PrismMesh_4nqio"]
+
+[node name="Player" type="Node3D"]
+script = ExtResource("1_myybe")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.933977, 0)
+mesh = SubResource("CapsuleMesh_hq643")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="MeshInstance3D"]
+transform = Transform3D(0.905516, 0, 0, 0, 1.48909e-07, 0.384409, 0, -1.13555, 5.04092e-08, 0, 0.447796, -0.671214)
+mesh = SubResource("PrismMesh_4nqio")
+
+[node name="CameraRoot" type="Node3D" parent="."]
+
+[node name="CameraH" type="Node3D" parent="CameraRoot"]
+
+[node name="CameraV" type="Node3D" parent="CameraRoot/CameraH"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.55921, 0)
+
+[node name="Camera3D" type="Camera3D" parent="CameraRoot/CameraH/CameraV"]
+transform = Transform3D(1, 0, 0, 0, 0.972921, 0.231137, 0, -0.231137, 0.972921, 0, 0, 2.35294)

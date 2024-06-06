@@ -1,23 +1,57 @@
-[gd_scene load_steps=4 format=3 uid="uid://bmyh7hhw1f818"]
+[gd_scene load_steps=9 format=3 uid="uid://bmyh7hhw1f818"]
 
+[ext_resource type="Script" path="res://main.gd" id="1_83ly0"]
 [ext_resource type="PackedScene" uid="uid://25iwu6aoqf52" path="res://announcer.tscn" id="1_txsww"]
+[ext_resource type="PackedScene" uid="uid://ba0tyec3gm2nb" path="res://player.tscn" id="3_pc41i"]
+
+[sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_gf4kp"]
+sky_horizon_color = Color(0.64625, 0.65575, 0.67075, 1)
+ground_horizon_color = Color(0.64625, 0.65575, 0.67075, 1)
+
+[sub_resource type="Sky" id="Sky_5gtvs"]
+sky_material = SubResource("ProceduralSkyMaterial_gf4kp")
+
+[sub_resource type="Environment" id="Environment_imvfe"]
+background_mode = 2
+sky = SubResource("Sky_5gtvs")
+tonemap_mode = 2
+glow_enabled = true
 
 [sub_resource type="PlaneMesh" id="PlaneMesh_n6o4y"]
 
 [sub_resource type="BoxMesh" id="BoxMesh_1h2c8"]
 
 [node name="Main" type="Node3D"]
+script = ExtResource("1_83ly0")
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource("Environment_imvfe")
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
+transform = Transform3D(-0.866023, -0.433016, 0.250001, 0, 0.499998, 0.866027, -0.500003, 0.749999, -0.43301, 0, 0, 0)
+shadow_enabled = true
 
 [node name="WorldPartition" type="WorldPartition" parent="."]
+chunk_size = Vector3(100, 0, 100)
+map_size = Vector3(1000, 0, 1000)
+show_chunk_markers = true
+use_auto_mapsize = false
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="WorldPartition"]
+process_mode = 4
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.741623, 0)
+visible = false
 mesh = SubResource("PlaneMesh_n6o4y")
 
 [node name="MeshInstance3D2" type="MeshInstance3D" parent="WorldPartition"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.04599, 0, 0)
+process_mode = 4
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.27592, 0, 0)
+visible = false
 mesh = SubResource("BoxMesh_1h2c8")
 
 [node name="Announcer" parent="WorldPartition" instance=ExtResource("1_txsww")]
+process_mode = 4
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.85224, 0, 0)
+visible = false
 
-[node name="Camera3D" type="Camera3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 0.856763, 0.515711, 0, -0.515711, 0.856763, 0, 1.13586, 2.02083)
+[node name="Player" parent="." instance=ExtResource("3_pc41i")]
