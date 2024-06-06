@@ -37,24 +37,32 @@ void WorldPartition::_process(double delta) {
 }
 
 void WorldPartition::_ready() {
+    marker_thickness = 0.2;
     children_nodes = get_children();
     int non_node3d_count = 0;
+    number_of_columns = map_size.x / chunk_size.x;
+    number_of_rows = map_size.z / chunk_size.z;
+    godot::StringName test_name = "Player";
     for (int i = 0; i < children_nodes.size(); i++)
     {
         godot::Node3D* child = Object::cast_to<Node3D>(children_nodes[i]);
-        if (child) {
-            if (child->get_global_position() != Vector3(0.0, 0.0, 0.0)) {
-                child->set_visible(false);
-                child->set_process_mode(ProcessMode::PROCESS_MODE_DISABLED);
-            }
-            godot::UtilityFunctions::print(child->get_class());
-            godot::UtilityFunctions::print(child->get_global_position());
+        if (child && child->get_name() != test_name) {
+            nodes_to_partition.append(child);
         }
+        else if (child->get_name() == test_name) { player_node = child; }
     }
     godot::UtilityFunctions::print(non_node3d_count);
 
     generate_chunks();
     if (show_chunk_markers){generate_markers();}
+
+    for (int i = 0; i < chunk_points.size(); i++) {
+        if (check_in_chunk(chunk_points[i], player_node->get_global_position()))
+        {current_chunk = i; break;}
+    }
+    godot::UtilityFunctions::print("columns and rows");
+    godot::UtilityFunctions::print(number_of_columns);
+    godot::UtilityFunctions::print(number_of_rows);
 }
 
 void WorldPartition::set_chunk_size(const Vector3 p_chunk_size) {chunk_size = p_chunk_size;}
@@ -90,14 +98,20 @@ void WorldPartition::generate_chunks() {
                 chunk_points.append(current_point);
                 current_point = Vector3(current_point.x - (chunk_size.x / 2), current_point.y, current_point.z);
             }
+
             current_point = Vector3(starting_point.x, current_point.y, current_point.z  - (chunk_size.z / 2));
+        }
+    }
+
+    for (int i = 0; i < number_of_columns; i++) {
+        edge_chunks.append(i);
+        if (i == 0 || i == number_of_columns - 1) {
+            edge_chunks.append(i);
         }
     }
 }
 
 void WorldPartition::generate_markers() {
-    float marker_thickness = 0.5;
-
     // front marker
     // top of mesh
     mesh_verts.push_back(Vector3(chunk_size.x / 2, 0.0, -chunk_size.z / 2));
@@ -217,3 +231,30 @@ void WorldPartition::generate_markers() {
     }
     
 }
+
+bool WorldPartition::check_in_chunk(Vector3 chunk_point, Vector3 test_point) {
+    float positive_x = chunk_point.x + marker_thickness;
+    float negative_x = chunk_point.x - marker_thickness;
+    float positive_z = chunk_point.z + marker_thickness;
+    float negative_z = chunk_point.z - marker_thickness;
+
+    return (test_point.x <= positive_x && test_point.x >= negative_x) && (test_point.z <= positive_z && test_point.z >= negative_z);
+}
+
+void WorldPartition::check_chunks() {
+
+}
+
+void WorldPartition::check_if_chunk_changed() {
+    //if (player_node->get_global_position().x >= chunk_points[current_chunk].x + chunk_size.x) {
+    //}
+}
+
+// caclculate number of columns
+// check if current chunk is an edge chunk
+// if it's an edge chunk we can ignore the missing sides
+// check side chunks first chunk_to_check = i - 1, chunk_to_check = i + 1
+// check top and bottom chunks next chunk_to_check = i - numb_of_columns, chunk_to_check = i + numb_of_columns
+// check corner chunks:
+//   chunk_to_check = i - numb_of_columns - 1, chunk_to_check = i - numb_of_columns + 1
+//   chunk_to_check = i + numb_of_columns - 1, chunk_to_check = i + numb_of_columns + 1

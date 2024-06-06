@@ -13,12 +13,19 @@ namespace godot {
 
         private:
             Array children_nodes;
-            Array chunk_points;
+            Array nodes_to_partition;
+            Array edge_chunks;
+            PackedVector3Array chunk_points;
+            Node3D* player_node;
             Vector3 chunk_size;
             Vector3 map_size;
             bool show_chunk_markers;
             bool use_auto_mapsize;
-            
+            float marker_thickness;
+            int current_chunk;
+            int number_of_columns;
+            int number_of_rows;
+
             MeshInstance3D *mesh_instance = memnew(MeshInstance3D);
             PackedVector3Array mesh_verts = PackedVector3Array();
 
@@ -40,6 +47,10 @@ namespace godot {
 
             void generate_chunks();
             void generate_markers();
+            bool check_in_chunk(Vector3 chunk_point, Vector3 test_point);
+            void check_chunks();
+            void check_if_chunk_changed();
+
 
             WorldPartition();
             ~WorldPartition();
