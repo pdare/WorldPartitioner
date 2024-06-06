@@ -96,30 +96,108 @@ void WorldPartition::generate_chunks() {
 }
 
 void WorldPartition::generate_markers() {
+    float marker_thickness = 0.5;
 
+    // front marker
     // top of mesh
-    mesh_verts.push_back(Vector3(1.0, 0.0, 1.0));
-    mesh_verts.push_back(Vector3(-1.0, 0.0, 1.0));
-    mesh_verts.push_back(Vector3(-1.0, 0.0, -1.0));
-
-    mesh_verts.push_back(Vector3(1.0, 0.0, 1.0));
-    mesh_verts.push_back(Vector3(-1.0, 0.0, -1.0));
-    mesh_verts.push_back(Vector3(1.0, 0.0, -1.0));
-
-    // front of mesh
+    mesh_verts.push_back(Vector3(chunk_size.x / 2, 0.0, -chunk_size.z / 2));
+    mesh_verts.push_back(Vector3(-chunk_size.x / 2, 0.0, -(chunk_size.z / 2) + marker_thickness));
+    mesh_verts.push_back(Vector3(-chunk_size.x / 2, 0.0, -chunk_size.z / 2));
     
-    mesh_verts.push_back(Vector3(-1.0, -1.0, 1.0));
-    mesh_verts.push_back(Vector3(-1.0, 0.0, 1.0));
-    mesh_verts.push_back(Vector3(1.0, 0.0, 1.0));
+    mesh_verts.push_back(Vector3(chunk_size.x / 2, 0.0, -chunk_size.z / 2));
+    mesh_verts.push_back(Vector3(chunk_size.x / 2, 0.0, -(chunk_size.z / 2) + marker_thickness));
+    mesh_verts.push_back(Vector3(-chunk_size.x / 2, 0.0, -(chunk_size.z / 2) + marker_thickness));
+    
+    // front of mesh
+    mesh_verts.push_back(Vector3(chunk_size.x / 2, 0.0, -(chunk_size.z / 2) + marker_thickness));
+    mesh_verts.push_back(Vector3(-chunk_size.x / 2, -marker_thickness, -(chunk_size.z / 2) + marker_thickness));
+    mesh_verts.push_back(Vector3(-chunk_size.x / 2, 0.0, -(chunk_size.z / 2) + marker_thickness));
+    
+    mesh_verts.push_back(Vector3(chunk_size.x / 2, 0.0, -(chunk_size.z / 2) + marker_thickness));
+    mesh_verts.push_back(Vector3(chunk_size.x / 2, -marker_thickness, -(chunk_size.z / 2) + marker_thickness));
+    mesh_verts.push_back(Vector3(-chunk_size.x / 2, -marker_thickness, -(chunk_size.z / 2) + marker_thickness));
+    
+    
+    // back marker
+    // top of mesh
+    mesh_verts.push_back(Vector3(chunk_size.x / 2, 0.0, chunk_size.z / 2));
+    mesh_verts.push_back(Vector3(-chunk_size.x / 2, 0.0, chunk_size.z / 2));
+    mesh_verts.push_back(Vector3(-chunk_size.x / 2, 0.0, (chunk_size.z / 2) - marker_thickness));
+    
+    mesh_verts.push_back(Vector3(chunk_size.x / 2, 0.0, chunk_size.z / 2));
+    mesh_verts.push_back(Vector3(-chunk_size.x / 2, 0.0, (chunk_size.z / 2) - marker_thickness));
+    mesh_verts.push_back(Vector3(chunk_size.x / 2, 0.0, (chunk_size.z / 2) - marker_thickness));
+    
+    // front of mesh
+    mesh_verts.push_back(Vector3(chunk_size.x / 2, 0.0, (chunk_size.z / 2) - marker_thickness));
+    mesh_verts.push_back(Vector3(-chunk_size.x / 2, 0.0, (chunk_size.z / 2) - marker_thickness));
+    mesh_verts.push_back(Vector3(-chunk_size.x / 2, -marker_thickness, (chunk_size.z / 2) - marker_thickness));
+    
+    mesh_verts.push_back(Vector3(chunk_size.x / 2, 0.0, (chunk_size.z / 2) - marker_thickness));
+    mesh_verts.push_back(Vector3(-chunk_size.x / 2, -marker_thickness, (chunk_size.z / 2) - marker_thickness));
+    mesh_verts.push_back(Vector3(chunk_size.x / 2, -marker_thickness, (chunk_size.z / 2) - marker_thickness));
+    
+    
+    // right marker
+    // top of mesh
+    mesh_verts.push_back(Vector3((chunk_size.x / 2) - marker_thickness, 0.0, chunk_size.z / 2));
+    mesh_verts.push_back(Vector3((chunk_size.x / 2), 0.0, -chunk_size.z / 2));
+    mesh_verts.push_back(Vector3((chunk_size.x / 2), 0.0, chunk_size.z / 2));
+    
+    mesh_verts.push_back(Vector3((chunk_size.x / 2) - marker_thickness, 0.0, -chunk_size.z / 2));
+    mesh_verts.push_back(Vector3(chunk_size.x / 2, 0.0, -chunk_size.z / 2));
+    mesh_verts.push_back(Vector3((chunk_size.x / 2) - marker_thickness, 0.0, chunk_size.z / 2));
+    // front of mesh
+    mesh_verts.push_back(Vector3((chunk_size.x / 2) - marker_thickness, 0.0, chunk_size.z / 2));
+    mesh_verts.push_back(Vector3((chunk_size.x / 2) - marker_thickness, -marker_thickness, chunk_size.z / 2));
+    mesh_verts.push_back(Vector3((chunk_size.x / 2) - marker_thickness, -marker_thickness, -chunk_size.z / 2));
+    
+    mesh_verts.push_back(Vector3((chunk_size.x / 2) - marker_thickness, 0.0, -chunk_size.z / 2));
+    mesh_verts.push_back(Vector3((chunk_size.x / 2) - marker_thickness, 0.0, chunk_size.z / 2));
+    mesh_verts.push_back(Vector3((chunk_size.x / 2) - marker_thickness, -marker_thickness, -chunk_size.z / 2));
+    
+    
+    // left marker
+    // top of mesh
+    mesh_verts.push_back(Vector3(-(chunk_size.x / 2) - marker_thickness, 0.0, chunk_size.z / 2));
+    mesh_verts.push_back(Vector3(-(chunk_size.x / 2), 0.0, -chunk_size.z / 2));
+    mesh_verts.push_back(Vector3(-(chunk_size.x / 2), 0.0, chunk_size.z / 2));
+    
+    mesh_verts.push_back(Vector3(-(chunk_size.x / 2) - marker_thickness, 0.0, -chunk_size.z / 2));
+    mesh_verts.push_back(Vector3(-chunk_size.x / 2, 0.0, -chunk_size.z / 2));
+    mesh_verts.push_back(Vector3(-(chunk_size.x / 2) - marker_thickness, 0.0, chunk_size.z / 2));
+    // front of mesh
+    mesh_verts.push_back(Vector3(-(chunk_size.x / 2), 0.0, chunk_size.z / 2));
+    mesh_verts.push_back(Vector3(-(chunk_size.x / 2), -marker_thickness, -chunk_size.z / 2));
+    mesh_verts.push_back(Vector3(-(chunk_size.x / 2), -marker_thickness, chunk_size.z / 2));
+    
+    mesh_verts.push_back(Vector3(-(chunk_size.x / 2), 0.0, -chunk_size.z / 2));
+    mesh_verts.push_back(Vector3(-(chunk_size.x / 2), -marker_thickness, -chunk_size.z / 2));
+    mesh_verts.push_back(Vector3(-(chunk_size.x / 2), 0.0, chunk_size.z / 2));
+    
+    // test single marker is generated correctly 
+    /*
+    Array surface_array = Array();
+    surface_array.resize(Mesh::ARRAY_MAX);
 
-    mesh_verts.push_back(Vector3(1.0, 0.0, 1.0));
-    mesh_verts.push_back(Vector3(1.0, -1.0, 1.0));
-    mesh_verts.push_back(Vector3(-1.0, -1.0, 1.0));
+    SurfaceTool *surface_tool = memnew(SurfaceTool);
+    surface_tool->begin(Mesh::PRIMITIVE_TRIANGLES);
+    surface_tool->generate_normals();
+    mesh_instance->set_mesh(memnew(ArrayMesh)); 
 
+    for (int i = 0; i < mesh_verts.size(); i++) {
+        surface_tool->add_vertex(mesh_verts[i]);
+    }
+
+    mesh_instance->set_mesh(surface_tool->commit());
+    mesh_instance->initialize_class();
+    add_child(mesh_instance);
+    mesh_instance->set_position(Vector3(0.0,0.0,0.0));
+    */
 
     for (int i = 0; i < chunk_points.size(); i++) {
         MeshInstance3D *another_mesh = memnew(MeshInstance3D);
-        godot::UtilityFunctions::print(chunk_points[i]);
+        //godot::UtilityFunctions::print(chunk_points[i]);
         Array surface_array = Array();
         surface_array.resize(Mesh::ARRAY_MAX);
 
@@ -137,4 +215,5 @@ void WorldPartition::generate_markers() {
         add_child(another_mesh);
         another_mesh->set_position(chunk_points[i]);
     }
+    
 }

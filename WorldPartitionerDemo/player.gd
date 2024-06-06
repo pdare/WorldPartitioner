@@ -28,3 +28,7 @@ func _process(delta):
 		self.position.x -= 20 * delta
 	if Input.is_action_pressed("move_right"):
 		self.position.x += 20 * delta
+	if Input.is_action_pressed("move_down"):
+		self.position.y -= 20 * delta
+	if Input.is_action_pressed("move_up"):
+		self.position.y += 20 * delta
