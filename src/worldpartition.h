@@ -14,14 +14,22 @@ namespace godot {
         private:
             Array children_nodes;
             Array nodes_to_partition;
+            TypedArray<Node3D> node3d_partitions;
+            TypedArray<MeshInstance3D> meshInstance3d_partitions;
             Array edge_chunks;
+
             PackedVector3Array chunk_points;
+
             Node3D* player_node;
+
             Vector3 chunk_size;
             Vector3 map_size;
+
             bool show_chunk_markers;
             bool use_auto_mapsize;
+
             float marker_thickness;
+
             int current_chunk;
             int number_of_columns;
             int number_of_rows;

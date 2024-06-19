@@ -1,4 +1,4 @@
-[gd_scene load_steps=10 format=3 uid="uid://bmyh7hhw1f818"]
+[gd_scene load_steps=13 format=3 uid="uid://bmyh7hhw1f818"]
 
 [ext_resource type="Script" path="res://main.gd" id="1_83ly0"]
 [ext_resource type="PackedScene" uid="uid://25iwu6aoqf52" path="res://announcer.tscn" id="1_txsww"]
@@ -23,6 +23,16 @@ glow_enabled = true
 
 [sub_resource type="CapsuleMesh" id="CapsuleMesh_254jq"]
 
+[sub_resource type="CapsuleMesh" id="CapsuleMesh_sjqa8"]
+height = 60.558
+
+[sub_resource type="SphereMesh" id="SphereMesh_bx56g"]
+radius = 6.214
+height = 5.762
+
+[sub_resource type="SphereMesh" id="SphereMesh_1ka7w"]
+radius = 6.214
+
 [node name="Main" type="Node3D"]
 script = ExtResource("1_83ly0")
 
@@ -38,27 +48,48 @@ chunk_size = Vector3(100, 0, 100)
 map_size = Vector3(1000, 0, 1000)
 show_chunk_markers = true
 
+[node name="Announcer2" parent="WorldPartition" instance=ExtResource("1_txsww")]
+process_mode = 4
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -12.7689, 0, 23.6437)
+visible = false
+
 [node name="MeshInstance3D" type="MeshInstance3D" parent="WorldPartition"]
 process_mode = 4
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.742, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9.15166, -0.742, -60.8646)
 visible = false
 mesh = SubResource("PlaneMesh_n6o4y")
 
 [node name="MeshInstance3D2" type="MeshInstance3D" parent="WorldPartition"]
-process_mode = 4
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.27592, 0, 0)
-visible = false
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -14.4996, 0, -46.352)
 mesh = SubResource("BoxMesh_1h2c8")
 
 [node name="Announcer" parent="WorldPartition" instance=ExtResource("1_txsww")]
 process_mode = 4
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.85224, 0, -3.87883)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6.99136, 0, -8.70101)
 visible = false
 
 [node name="Player" parent="WorldPartition" instance=ExtResource("3_pc41i")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 43.2271, 0, 19.7163)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -13.4954, 0, -15.3421)
 move_speed = 200.0
 
 [node name="MeshInstance3D3" type="MeshInstance3D" parent="WorldPartition"]
+process_mode = 4
 transform = Transform3D(1.77583, 0, 0, 0, 3.37017, 0, 0, 0, 1, 450.192, 0, 450)
+visible = false
 mesh = SubResource("CapsuleMesh_254jq")
+
+[node name="MeshInstance3D4" type="MeshInstance3D" parent="WorldPartition"]
+process_mode = 4
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -19.7552, 0, -113.909)
+visible = false
+mesh = SubResource("CapsuleMesh_sjqa8")
+
+[node name="Circle1" type="MeshInstance3D" parent="WorldPartition"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8.63378, 0, -22.2078)
+mesh = SubResource("SphereMesh_bx56g")
+
+[node name="Circle2" type="MeshInstance3D" parent="WorldPartition"]
+process_mode = 4
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 19.6333, 0, -42.0481)
+visible = false
+mesh = SubResource("SphereMesh_1ka7w")
