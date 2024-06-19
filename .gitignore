@@ -19,3 +19,5 @@ mono_crash.*.json
 # other specific
 *.obj
 *.dblite
+
+WorldPartitionerDemo/Meshes/
