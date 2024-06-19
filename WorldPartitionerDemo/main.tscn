@@ -40,20 +40,25 @@ show_chunk_markers = true
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="WorldPartition"]
 process_mode = 4
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.741623, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.742, 0)
+visible = false
 mesh = SubResource("PlaneMesh_n6o4y")
 
 [node name="MeshInstance3D2" type="MeshInstance3D" parent="WorldPartition"]
 process_mode = 4
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.27592, 0, 0)
+visible = false
 mesh = SubResource("BoxMesh_1h2c8")
 
 [node name="Announcer" parent="WorldPartition" instance=ExtResource("1_txsww")]
 process_mode = 4
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.85224, 0, -3.87883)
+visible = false
 
 [node name="Player" parent="WorldPartition" instance=ExtResource("3_pc41i")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 43.2271, 0, 19.7163)
+move_speed = 200.0
 
 [node name="MeshInstance3D3" type="MeshInstance3D" parent="WorldPartition"]
-transform = Transform3D(1.77583, 0, 0, 0, 3.37017, 0, 0, 0, 1, 2.95345, 3.0607, -24.1543)
+transform = Transform3D(1.77583, 0, 0, 0, 3.37017, 0, 0, 0, 1, 450.192, 0, 450)
 mesh = SubResource("CapsuleMesh_254jq")

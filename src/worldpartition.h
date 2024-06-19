@@ -29,6 +29,9 @@ namespace godot {
             MeshInstance3D *mesh_instance = memnew(MeshInstance3D);
             PackedVector3Array mesh_verts = PackedVector3Array();
 
+            MeshInstance3D *debug_mesh_instance = memnew(MeshInstance3D);
+            PackedVector3Array debug_mesh_verts = PackedVector3Array();
+
         protected:
             static void _bind_methods();
 
@@ -47,9 +50,11 @@ namespace godot {
 
             void generate_chunks();
             void generate_markers();
+            void generate_debug_markers();
             bool check_in_chunk(Vector3 chunk_point, Vector3 test_point);
             void check_chunks();
             void check_if_chunk_changed();
+            void generate_point_markers();
 
 
             WorldPartition();

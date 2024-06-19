@@ -25,4 +25,8 @@ mesh = SubResource("PrismMesh_4nqio")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.55921, 0)
 
 [node name="Camera3D" type="Camera3D" parent="CameraRoot/CameraH/CameraV"]
-transform = Transform3D(1, 0, 0, 0, 0.972921, 0.231137, 0, -0.231137, 0.972921, 0, 0, 2.35294)
+transform = Transform3D(1, 0, 0, 0, 0.972921, 0.231137, 0, -0.231137, 0.972921, 0, 0.992965, 4.59713)
+current = true
+
+[node name="Camera3D2" type="Camera3D" parent="CameraRoot/CameraH/CameraV"]
+transform = Transform3D(1, 0, 0, 0, 0.644671, 0.76446, 0, -0.76446, 0.644671, 0, 39.8026, 37.4665)
