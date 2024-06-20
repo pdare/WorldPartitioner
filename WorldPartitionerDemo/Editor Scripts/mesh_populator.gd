@@ -2,7 +2,7 @@
 extends EditorScript
 
 
-var props_num = 10000
+var props_num = 20000
 var max_neg = Vector2(-500.0, -500.0)
 var max_pos = Vector2(500.0, 500.0)
 

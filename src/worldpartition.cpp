@@ -1,6 +1,7 @@
 #include "worldpartition.h"
 #include <..\godot-cpp-4.2\include\godot_cpp\core\class_db.hpp>
 #include <..\godot-cpp-4.2\gen\include\godot_cpp\variant\utility_functions.hpp>
+#include <..\godot-cpp-4.2\gen\include\godot_cpp\classes\engine.hpp>
 #include <..\godot-cpp-4.2\gen\include\godot_cpp\classes\node3d.hpp>
 #include <..\godot-cpp-4.2\include\godot_cpp\core\object.hpp>
 
@@ -28,48 +29,57 @@ WorldPartition::WorldPartition() {
     //chunk_size = Vector3(0.0, 0.0, 0.0);
     //map_size = Vector3(0.0, 0.0, 0.0);
     //show_chunk_markers = false;
+    if (godot::Engine::get_singleton()->is_editor_hint()) {
+        set_process_mode(Node::ProcessMode::PROCESS_MODE_DISABLED);
+    }
 }
 
 WorldPartition::~WorldPartition() {}
 
 void WorldPartition::_ready() {
-    marker_thickness = 0.2;
-    children_nodes = get_children();
-    int non_node3d_count = 0;
-    number_of_columns = map_size.x / chunk_size.x;
-    number_of_rows = map_size.z / chunk_size.z;
-    godot::StringName test_name = "Player";
-    for (int i = 0; i < children_nodes.size(); i++)
-    {
-        godot::Node3D* child = Object::cast_to<Node3D>(children_nodes[i]);
-        if (child && child->get_name() != test_name) {
-            node3d_partitions.append(child);
+    if (!godot::Engine::get_singleton()->is_editor_hint()) {
+        marker_thickness = 0.2;
+        children_nodes = get_children();
+        int non_node3d_count = 0;
+        number_of_columns = map_size.x / chunk_size.x;
+        number_of_rows = map_size.z / chunk_size.z;
+        godot::StringName test_name = "Player";
+        for (int i = 0; i < children_nodes.size(); i++)
+        {
+            godot::Node3D* child = Object::cast_to<Node3D>(children_nodes[i]);
+            if (child && child->get_name() != test_name) {
+                node3d_partitions.append(child);
+            }
+            else if (child->get_name() == test_name) { player_node = child; }
+            else if (child->get_name() == test_name) { 
+                godot::MeshInstance3D* mesh_child = Object::cast_to<MeshInstance3D>(children_nodes[i]);
+                if (mesh_child && mesh_child->get_name() != test_name) { meshInstance3d_partitions.append(mesh_child); }
+            }
         }
-        else if (child->get_name() == test_name) { player_node = child; }
-        else if (child->get_name() == test_name) { 
-            godot::MeshInstance3D* mesh_child = Object::cast_to<MeshInstance3D>(children_nodes[i]);
-            if (mesh_child && mesh_child->get_name() != test_name) { meshInstance3d_partitions.append(mesh_child); }
+        godot::UtilityFunctions::print(non_node3d_count);
+        use_auto_mapsize = false;
+        show_chunk_markers = true;
+        generate_chunks();
+        if (show_chunk_markers){generate_markers();}
+
+        for (int i = 0; i < chunk_points.size(); i++) {
+            if (check_in_chunk(chunk_points[i], player_node->get_global_position()))
+            {current_chunk = i; break;}
         }
-    }
-    godot::UtilityFunctions::print(non_node3d_count);
-    use_auto_mapsize = false;
-    show_chunk_markers = true;
-    generate_chunks();
-    if (show_chunk_markers){generate_markers();}
 
-    for (int i = 0; i < chunk_points.size(); i++) {
-        if (check_in_chunk(chunk_points[i], player_node->get_global_position()))
-        {current_chunk = i; break;}
+        check_chunks();
+        generate_debug_markers();
+        debug_mesh_instance->set_visible(false);
+        generate_point_markers();
+        godot::UtilityFunctions::print("columns and rows");
+        godot::UtilityFunctions::print(number_of_columns);
+        godot::UtilityFunctions::print(number_of_rows);
+        godot::UtilityFunctions::print(chunk_points.size());
     }
 
-    check_chunks();
-    generate_debug_markers();
-    debug_mesh_instance->set_visible(false);
-    generate_point_markers();
-    godot::UtilityFunctions::print("columns and rows");
-    godot::UtilityFunctions::print(number_of_columns);
-    godot::UtilityFunctions::print(number_of_rows);
-    godot::UtilityFunctions::print(chunk_points.size());
+    if (godot::Engine::get_singleton()->is_editor_hint()) {
+        set_process_mode(Node::ProcessMode::PROCESS_MODE_DISABLED);
+    }
 }
 
 void WorldPartition::_process(double delta) {
@@ -120,20 +130,6 @@ void WorldPartition::generate_chunks() {
                 last_point = current_point;
             }
         }
-
-        /*
-        while (current_point.z >= lowest_point.z)
-        {
-            while (current_point.x >= lowest_point.x)
-            {
-                chunk_points.append(current_point);
-                godot::UtilityFunctions::print(current_point);
-                current_point = Vector3(current_point.x - (chunk_size.x), current_point.y, current_point.z);
-            }
-
-            current_point = Vector3(starting_point.x, current_point.y, current_point.z  - (chunk_size.z));
-        }
-        */
     }
     
 
@@ -418,31 +414,33 @@ void WorldPartition::check_chunks() {
 }
 
 void WorldPartition::check_if_chunk_changed() {
-   int chunk_ahead = current_chunk + 1;
-   int chunk_behind = current_chunk - 1;
-   int chunk_left = current_chunk + 10;
-   int chunk_right = current_chunk - 10;
-   bool new_chunk = false;
+    int x_points = ceill(map_size.x / chunk_size.x);
+    int z_points = ceill(map_size.z / chunk_size.z);
+    int chunk_ahead = current_chunk + 1;
+    int chunk_behind = current_chunk - 1;
+    int chunk_left = current_chunk + x_points;
+    int chunk_right = current_chunk - x_points;
+    bool new_chunk = false;
 
-   if (check_in_chunk(chunk_points[chunk_ahead], player_node->get_global_position())) {
-        current_chunk = chunk_ahead;
-        debug_mesh_instance->set_global_position(chunk_points[current_chunk]);
-        new_chunk = true;
-   } else if (check_in_chunk(chunk_points[chunk_behind], player_node->get_global_position())) {
-        current_chunk = chunk_behind;
-        debug_mesh_instance->set_global_position(chunk_points[current_chunk]);
-        new_chunk = true;
-   } else if (check_in_chunk(chunk_points[chunk_left], player_node->get_global_position())) {
-        current_chunk = chunk_left;
-        debug_mesh_instance->set_global_position(chunk_points[current_chunk]);
-        new_chunk = true;
-   } else if (check_in_chunk(chunk_points[chunk_right], player_node->get_global_position())) {
-        current_chunk = chunk_right;
-        debug_mesh_instance->set_global_position(chunk_points[current_chunk]);
-        new_chunk = true;
-   }
+    if (check_in_chunk(chunk_points[chunk_ahead], player_node->get_global_position())) {
+            current_chunk = chunk_ahead;
+            debug_mesh_instance->set_global_position(chunk_points[current_chunk]);
+            new_chunk = true;
+    } else if (check_in_chunk(chunk_points[chunk_behind], player_node->get_global_position())) {
+            current_chunk = chunk_behind;
+            debug_mesh_instance->set_global_position(chunk_points[current_chunk]);
+            new_chunk = true;
+    } else if (check_in_chunk(chunk_points[chunk_left], player_node->get_global_position())) {
+            current_chunk = chunk_left;
+            debug_mesh_instance->set_global_position(chunk_points[current_chunk]);
+            new_chunk = true;
+    } else if (check_in_chunk(chunk_points[chunk_right], player_node->get_global_position())) {
+            current_chunk = chunk_right;
+            debug_mesh_instance->set_global_position(chunk_points[current_chunk]);
+            new_chunk = true;
+    }
 
-   if (new_chunk) { check_chunks(); }
+    if (new_chunk) { check_chunks(); }
 }
 
 // caclculate number of columns
