@@ -45,7 +45,7 @@ transform = Transform3D(-0.866023, -0.433016, 0.250001, 0, 0.499998, 0.866027, -
 shadow_enabled = true
 
 [node name="WorldPartition" type="WorldPartition" parent="."]
-chunk_size = Vector3(100, 0, 50)
+chunk_size = Vector3(94, 0, 77)
 map_size = Vector3(1000, 0, 1000)
 show_chunk_markers = true
 
