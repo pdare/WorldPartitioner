@@ -28,6 +28,7 @@ namespace godot {
 
             bool show_chunk_markers;
             bool use_auto_mapsize;
+            bool player_was_outside_bounds;
 
             float marker_thickness;
 

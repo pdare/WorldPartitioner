@@ -39,6 +39,7 @@ WorldPartition::~WorldPartition() {}
 void WorldPartition::_ready() {
     if (!godot::Engine::get_singleton()->is_editor_hint()) {
         marker_thickness = 0.2;
+        player_was_outside_bounds = false;
         children_nodes = get_children();
         int non_node3d_count = 0;
         number_of_columns = map_size.x / chunk_size.x;
@@ -424,8 +425,24 @@ void WorldPartition::check_if_chunk_changed() {
     int chunk_left = current_chunk + z_points;
     int chunk_right = current_chunk - z_points;
     bool new_chunk = false;
+    Vector3 current_player_pos = player_node->get_global_position();
 
-    if (edge_chunks.count(current_chunk) == 0) {
+    if ((current_player_pos.x > map_size.x / 2) || (current_player_pos.x < -map_size.x / 2) || (current_player_pos.z > map_size.z / 2) || (current_player_pos.z < -map_size.z / 2)) {
+        godot::UtilityFunctions::print("player out of bonds");
+        player_was_outside_bounds = true;
+        current_chunk = -1;
+    } else if (player_was_outside_bounds) {
+        for (int i = 0; i < chunk_points.size(); i++) {
+            if (check_in_chunk(chunk_points[i], player_node->get_global_position())) {
+                current_chunk = i;
+                last_player_position = player_node->get_global_position();
+                player_was_outside_bounds = false;
+                godot::UtilityFunctions::print("player back in bounds in chunk: ");
+                godot::UtilityFunctions::print(current_chunk);
+                break;
+            }
+        }
+    } else if (edge_chunks.count(current_chunk) == 0) {
         if (check_in_chunk(chunk_points[chunk_ahead], player_node->get_global_position())) {
                 current_chunk = chunk_ahead;
                 debug_mesh_instance->set_global_position(chunk_points[current_chunk]);
@@ -445,35 +462,86 @@ void WorldPartition::check_if_chunk_changed() {
         }
     } else {
         // check top edge then bottom edge
-        // if current_chunk % z_points == z_points - 1 then top edge, if current_chunk % z_points == 0 then bottom edge
-        // right edge is 0 through z_points - 1, left edge is total_number_of_chunks - 1 through total_number_of_chunks - z_points
+        // top edge: if current_chunk % z_points == z_points - 1
+        // bottom edge: if current_chunk % z_points == 0
+        // right edge: 0 through z_points - 1
+        // left edge: total_number_of_chunks - 1 through total_number_of_chunks - z_points
+        //
+        // top right corner: if current_chunk % z_points == z_points - 1 and current_chunk = z_points - 1
+        // top left corner: if current_chunk % z_points == z_points - 1 and current_chunk = total_number_of_chunks - 1
+        // bottom right corner: if current_chunk == 0
+        // bottom left corner: if current_chunk
         if (current_chunk % z_points == z_points - 1) {
-            if (check_in_chunk(chunk_points[chunk_behind], player_node->get_global_position())) {
-                    current_chunk = chunk_behind;
-                    debug_mesh_instance->set_global_position(chunk_points[current_chunk]);
-                    new_chunk = true;
-            } else if (check_in_chunk(chunk_points[chunk_left], player_node->get_global_position())) {
-                    current_chunk = chunk_left;
-                    debug_mesh_instance->set_global_position(chunk_points[current_chunk]);
-                    new_chunk = true;
-            } else if (check_in_chunk(chunk_points[chunk_right], player_node->get_global_position())) {
-                    current_chunk = chunk_right;
-                    debug_mesh_instance->set_global_position(chunk_points[current_chunk]);
-                    new_chunk = true;
+            if (current_chunk == z_points - 1) {
+                if (check_in_chunk(chunk_points[chunk_behind], player_node->get_global_position())) {
+                        current_chunk = chunk_behind;
+                        debug_mesh_instance->set_global_position(chunk_points[current_chunk]);
+                        new_chunk = true;
+                } else if (check_in_chunk(chunk_points[chunk_left], player_node->get_global_position())) {
+                        current_chunk = chunk_left;
+                        debug_mesh_instance->set_global_position(chunk_points[current_chunk]);
+                        new_chunk = true;
+                }
+            } else if (current_chunk == chunk_points.size() - 1) {
+                if (check_in_chunk(chunk_points[chunk_behind], player_node->get_global_position())) {
+                        current_chunk = chunk_behind;
+                        debug_mesh_instance->set_global_position(chunk_points[current_chunk]);
+                        new_chunk = true;
+                } else if (check_in_chunk(chunk_points[chunk_right], player_node->get_global_position())) {
+                        current_chunk = chunk_right;
+                        debug_mesh_instance->set_global_position(chunk_points[current_chunk]);
+                        new_chunk = true;
+                }
+            } else {
+                if (check_in_chunk(chunk_points[chunk_behind], player_node->get_global_position())) {
+                        current_chunk = chunk_behind;
+                        debug_mesh_instance->set_global_position(chunk_points[current_chunk]);
+                        new_chunk = true;
+                } else if (check_in_chunk(chunk_points[chunk_left], player_node->get_global_position())) {
+                        current_chunk = chunk_left;
+                        debug_mesh_instance->set_global_position(chunk_points[current_chunk]);
+                        new_chunk = true;
+                } else if (check_in_chunk(chunk_points[chunk_right], player_node->get_global_position())) {
+                        current_chunk = chunk_right;
+                        debug_mesh_instance->set_global_position(chunk_points[current_chunk]);
+                        new_chunk = true;
+                }
             }
         } else if (current_chunk % z_points == 0) {
-            if (check_in_chunk(chunk_points[chunk_ahead], player_node->get_global_position())) {
-                current_chunk = chunk_ahead;
-                debug_mesh_instance->set_global_position(chunk_points[current_chunk]);
-                new_chunk = true;
-            } else if (check_in_chunk(chunk_points[chunk_left], player_node->get_global_position())) {
-                    current_chunk = chunk_left;
-                    debug_mesh_instance->set_global_position(chunk_points[current_chunk]);
-                    new_chunk = true;
-            } else if (check_in_chunk(chunk_points[chunk_right], player_node->get_global_position())) {
-                    current_chunk = chunk_right;
-                    debug_mesh_instance->set_global_position(chunk_points[current_chunk]);
-                    new_chunk = true;
+            if (current_chunk == 0) {
+                if (check_in_chunk(chunk_points[chunk_ahead], player_node->get_global_position())) {
+                        current_chunk = chunk_ahead;
+                        debug_mesh_instance->set_global_position(chunk_points[current_chunk]);
+                        new_chunk = true;
+                } else if (check_in_chunk(chunk_points[chunk_left], player_node->get_global_position())) {
+                        current_chunk = chunk_left;
+                        debug_mesh_instance->set_global_position(chunk_points[current_chunk]);
+                        new_chunk = true;
+                }
+            } else if (current_chunk == chunk_points.size() - z_points) {
+                if (check_in_chunk(chunk_points[chunk_ahead], player_node->get_global_position())) {
+                        current_chunk = chunk_ahead;
+                        debug_mesh_instance->set_global_position(chunk_points[current_chunk]);
+                        new_chunk = true;
+                } else if (check_in_chunk(chunk_points[chunk_right], player_node->get_global_position())) {
+                        current_chunk = chunk_right;
+                        debug_mesh_instance->set_global_position(chunk_points[current_chunk]);
+                        new_chunk = true;
+                }
+            } else { 
+                if (check_in_chunk(chunk_points[chunk_ahead], player_node->get_global_position())) {
+                        current_chunk = chunk_ahead;
+                        debug_mesh_instance->set_global_position(chunk_points[current_chunk]);
+                        new_chunk = true;
+                } else if (check_in_chunk(chunk_points[chunk_left], player_node->get_global_position())) {
+                        current_chunk = chunk_left;
+                        debug_mesh_instance->set_global_position(chunk_points[current_chunk]);
+                        new_chunk = true;
+                } else if (check_in_chunk(chunk_points[chunk_right], player_node->get_global_position())) {
+                        current_chunk = chunk_right;
+                        debug_mesh_instance->set_global_position(chunk_points[current_chunk]);
+                        new_chunk = true;
+                }
             }
         } else if (current_chunk >= 0 && current_chunk <= z_points - 1) {
             if (check_in_chunk(chunk_points[chunk_ahead], player_node->get_global_position())) {
@@ -489,7 +557,6 @@ void WorldPartition::check_if_chunk_changed() {
                     debug_mesh_instance->set_global_position(chunk_points[current_chunk]);
                     new_chunk = true;
             }
-            godot::UtilityFunctions::print("we're in the right edge");
         } else if (current_chunk < chunk_points.size() && current_chunk >= chunk_points.size() - z_points) {
             if (check_in_chunk(chunk_points[chunk_ahead], player_node->get_global_position())) {
                 current_chunk = chunk_ahead;
@@ -504,11 +571,9 @@ void WorldPartition::check_if_chunk_changed() {
                     debug_mesh_instance->set_global_position(chunk_points[current_chunk]);
                     new_chunk = true;
             }
-            godot::UtilityFunctions::print("we're in the left edge");
         } else {
             godot::UtilityFunctions::print("checking top and bottom edges didn't work");
         }
-        
     }
 
     if (new_chunk) { check_chunks(); godot::UtilityFunctions::print(current_chunk);}
