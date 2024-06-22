@@ -24,6 +24,7 @@ namespace godot {
 
             Vector3 chunk_size;
             Vector3 map_size;
+            Vector3 last_player_position;
 
             bool show_chunk_markers;
             bool use_auto_mapsize;
